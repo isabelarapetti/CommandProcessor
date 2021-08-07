@@ -90,6 +90,7 @@ namespace ConsoleAppSimple
     {
         public void Execute(string argument, FileSystemElement currentNode)
         {
+            Console.WriteLine(currentNode.Name + ' ' + currentNode.Parent);
             currentNode.GetCurrentFullPath();
         }
     }
@@ -103,7 +104,7 @@ namespace ConsoleAppSimple
             }
             else
             {
-                new FileSystemElement(argument, currentNode, true);
+                currentNode.AddChildren(new FileSystemElement(argument, currentNode, true));
                 Console.WriteLine($"Create Directory {argument}");
             }
 
@@ -119,7 +120,7 @@ namespace ConsoleAppSimple
             }
             else
             {
-                new FileSystemElement(argument, currentNode, false);
+                currentNode.AddChildren(new FileSystemElement(argument, currentNode, false));
                 Console.WriteLine($"Create File {argument}");
             }
         }
@@ -171,10 +172,10 @@ namespace ConsoleAppSimple
             }
         }
 
-        //public void AddChildren(FileSystemElement node)
-        //{
-        //    Children.Add(node);
-        //}
+        public void AddChildren(FileSystemElement node)
+        {
+            Children.Add(node);
+        }
 
     }
     #endregion
