@@ -17,8 +17,9 @@ namespace ConsoleAppSimple
                 var input = System.Console.ReadLine().Trim();
                 var arguments = new List<string>(input.Split(' '));
                 var commandName = arguments[0];
+                arguments.Remove(commandName);
 
-                var command = SimpleCommandFactory.CreateCommand(commandName, fs); //TODO remove fs
+                var command = SimpleCommandFactory.CreateCommand(commandName); //TODO remove fs
                 command.Execute(arguments,fs);
             }
         }
@@ -27,12 +28,12 @@ namespace ConsoleAppSimple
     #region COMMANDS REGION
     public interface ICommand
     {
-        void Execute(List<string> arguments, FileSystemElement fs);
+        void Execute(List<string> arguments, FileSystemElement currentNode);
     }
 
     public class SimpleCommandFactory
     {
-        public static ICommand CreateCommand(String commandName, FileSystemElement fs)
+        public static ICommand CreateCommand(String commandName)
         {
             switch (commandName)
             {
@@ -57,7 +58,8 @@ namespace ConsoleAppSimple
     //Concrete Commands
     public class QuitCommand : ICommand
     {
-        public void Execute(List<string> arguments)
+        //TODO switch to class instead of Int to avoid unused arg implementation
+        public void Execute(List<string> arguments, FileSystemElement currentNode)
         {
             Console.WriteLine($"Shutting down!");
             Environment.Exit(0);
@@ -65,7 +67,7 @@ namespace ConsoleAppSimple
     }
     public class UnrecognizedCommand : ICommand
     {
-        public void Execute(List<string> arguments)
+        public void Execute(List<string> arguments, FileSystemElement currentNode)
         {
             Console.WriteLine($"Command not recognized");
         }
@@ -74,23 +76,38 @@ namespace ConsoleAppSimple
     {
         public void Execute(List<string> arguments, FileSystemElement currentNode)
         {
-            Console.WriteLine($"PrintDirectoryCommand");
+            currentNode.GetCurrentFullPath();
         }
     }
     public class CreateDirectoryCommand : ICommand //mkdir
     {
         public void Execute(List<string> arguments, FileSystemElement currentNode)
         {
-            new FileSystemElement(arguments[0], currentNode, true);
-            Console.WriteLine($"Create Directory {arguments[0]}");
+            if (arguments == null || arguments[0].Length > 100)
+            {
+                Console.WriteLine($"Invalid command:  {arguments[0]}");
+            }
+            else
+            {
+                new FileSystemElement(arguments[0], currentNode, true);
+                Console.WriteLine($"Create Directory {arguments[0]}");
+            }
+
         }
     }
     public class CreateFileCommand : ICommand //touch
     {
         public void Execute(List<string> arguments, FileSystemElement currentNode)
         {
-            new FileSystemElement(arguments[0], currentNode, false);
-            Console.WriteLine($"Create Directory {arguments[0]}");
+            if (arguments == null || arguments[0].Length > 100)
+            {
+                Console.WriteLine($"Invalid command:  {arguments[0]}");
+            }
+            else
+            {
+                new FileSystemElement(arguments[0], currentNode, false);
+                Console.WriteLine($"Create File {arguments[0]}");
+            }
         }
     }
 
